@@ -5,6 +5,228 @@ info:
     products and their stock quantities.  Features: 1. Add products with name, price
     and quantity. 2. View all products in a table. 3. Edit product details. 4. Delete
     products. 5. Upd'
-  version: architecture-v0
+  version: architecture-v1
   description: Designed API from the approved architecture (not extracted from code).
-paths: {}
+paths:
+  /auth/login:
+    post:
+      summary: Sign in; returns an opaque bearer token in the body.
+      description: Sign in; returns an opaque bearer token in the body.
+      operationId: post_auth_login
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ email, password }'
+      responses:
+        '200':
+          description: '200 { token, expires_at } or 401 { error: ''invalid email
+            or password'' }'
+  /auth/logout:
+    post:
+      summary: Revoke the current session token.
+      description: Revoke the current session token.
+      operationId: post_auth_logout
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: (empty)
+      responses:
+        '200':
+          description: '204'
+      security:
+      - bearerAuth: []
+  /auth/me:
+    get:
+      summary: Return the signed-in user; used by the SPA to confirm an active session.
+      description: Return the signed-in user; used by the SPA to confirm an active
+        session.
+      operationId: get_auth_me
+      parameters: []
+      responses:
+        '200':
+          description: 200 { id, email } or 401
+      security:
+      - bearerAuth: []
+  /auth/register:
+    post:
+      summary: Create an account with email and password; rejects an already-used
+        email.
+      description: Create an account with email and password; rejects an already-used
+        email.
+      operationId: post_auth_register
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ email, password }'
+      responses:
+        '200':
+          description: '201 { id, email } or 409 { error: ''email already in use''
+            }'
+  /products:
+    get:
+      summary: List products, optional case-insensitive name search via q; each item
+        carries a derived low_stock flag.
+      description: List products, optional case-insensitive name search via q; each
+        item carries a derived low_stock flag.
+      operationId: get_products
+      parameters: []
+      responses:
+        '200':
+          description: 200 [ { id, name, price_usd, quantity, low_stock } ]
+      security:
+      - bearerAuth: []
+    post:
+      summary: Add a product; validates name, non-negative price, whole non-negative
+        quantity.
+      description: Add a product; validates name, non-negative price, whole non-negative
+        quantity.
+      operationId: post_products
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ name, price_usd, quantity }'
+      responses:
+        '200':
+          description: 201 { id, name, price_usd, quantity, low_stock } or 422 { errors
+            }
+      security:
+      - bearerAuth: []
+  /products/{id}:
+    put:
+      summary: Edit a product's name, price and quantity with the same validation.
+      description: Edit a product's name, price and quantity with the same validation.
+      operationId: put_products_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ name, price_usd, quantity }'
+      responses:
+        '200':
+          description: 200 { product } or 422 { errors } or 404
+      security:
+      - bearerAuth: []
+    delete:
+      summary: Delete a product (confirmation handled in the SPA).
+      description: Delete a product (confirmation handled in the SPA).
+      operationId: delete_products_id
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 204 or 404
+      security:
+      - bearerAuth: []
+  /products/{id}/quantity:
+    patch:
+      summary: Update only the stock quantity to a whole number of zero or more.
+      description: Update only the stock quantity to a whole number of zero or more.
+      operationId: patch_products_id_quantity
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: '{ quantity }'
+      responses:
+        '200':
+          description: 200 { product } or 422 { error } or 404
+      security:
+      - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    users:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        password_hash:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - email
+      - password_hash
+      - created_at
+    sessions:
+      type: object
+      properties:
+        token:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - token
+      - user_id
+      - created_at
+      - expires_at
+    products:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        price_usd:
+          type: number
+        quantity:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - name
+      - price_usd
+      - quantity
+      - created_at
+      - updated_at
