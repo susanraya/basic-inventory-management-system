@@ -16,7 +16,7 @@ Features:
 6. Search products by name.
 7. Display a low-stock warning when quantity is below 5.
 
-**Documentation version:** v2
+**Documentation version:** v3
 <!-- sdlc:auto:end overview -->
 
 ## Contents
@@ -26,7 +26,7 @@ Features:
 |---|---|
 | [Requirements](requirements/README.md) | v1 approved |
 | [Architecture](architecture/README.md) | 14 entries |
-| [Planning](planning/README.md) | 4 entries |
+| [Planning](planning/README.md) | 7 entries |
 | [Development](development/README.md) | 0 entries |
 | [Testing](testing/README.md) | 0 entries |
 | [Deployment](deployment/README.md) | 0 entries |
@@ -43,5 +43,5 @@ Features:
 | [Runbook](deployment/runbook.md) | not deployed yet |
 | [Release notes](deployment/release-notes.md) | 0 releases |
 | [Traceability matrix](traceability-matrix.md) | 12 requirements |
-| [Changelog](CHANGELOG.md) | 2 versions |
+| [Changelog](CHANGELOG.md) | 3 versions |
 <!-- sdlc:auto:end contents -->
